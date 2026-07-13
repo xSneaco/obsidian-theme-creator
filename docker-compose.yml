@@ -1,6 +1,7 @@
 services:
   frontend:
     container_name: obsidian-theme
+    image: ghcr.io/xsneaco/obsidian-theme-creator/frontend:${IMAGE_TAG:-latest}
     build:
       context: .
       target: production
