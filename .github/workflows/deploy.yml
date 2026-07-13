@@ -56,10 +56,24 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           script: |
-            set -e
-            cd ${{secrets.DEPLOY_PATH}}
+            set -euo pipefail
+
+            APP_DIR='${{ secrets.DEPLOY_PATH }}'
+            echo "DEPLOY_PATH=$APP_DIR"
+
+            [ -n "$APP_DIR" ] || { echo "DEPLOY_PATH is empty"; exit 1; }
+            [ -d "$APP_DIR" ] || { echo "DEPLOY_PATH does not exist: $APP_DIR"; exit 1; }
+
+            cd "$APP_DIR"
+            echo "PWD=$(pwd)"
+            ls -la
+
+            [ -f docker-compose.yml ] || { echo "Missing docker-compose.yml in $APP_DIR"; exit 1; }
+            [ -f docker-compose.prod.yml ] || { echo "Missing docker-compose.prod.yml in $APP_DIR"; exit 1; }
+
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             export IMAGE_TAG=latest
+
             docker compose -f docker-compose.yml -f docker-compose.prod.yml pull frontend
             docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --force-recreate frontend
             docker compose -f docker-compose.yml -f docker-compose.prod.yml ps
