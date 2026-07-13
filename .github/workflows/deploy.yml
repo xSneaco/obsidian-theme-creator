@@ -79,11 +79,11 @@ jobs:
             
             ls -la
             [ -f docker-compose.yml ] || { echo "Missing docker-compose.yml"; exit 1; }
-            [ -f docker-compose.prod.yml ] || { echo "Missing docker-compose.prod.yml"; exit 1; }
+            [ -f docker-compose.yml ] || { echo "Missing docker-compose.yml"; exit 1; }
             
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u xSneaco --password-stdin
             export IMAGE_TAG=latest
             
-            docker compose -f docker-compose.yml -f docker-compose.prod.yml pull frontend
-            docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --force-recreate frontend
-            docker compose -f docker-compose.yml -f docker-compose.prod.yml ps
+            docker compose -f docker-compose.yml -f docker-compose.yml pull frontend
+            docker compose -f docker-compose.yml -f docker-compose.yml up -d --force-recreate frontend
+            docker compose -f docker-compose.yml -f docker-compose.yml ps
