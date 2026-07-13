@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 interface SectionGroupProps {
   title: string;
@@ -11,18 +11,21 @@ export function SectionGroup({ title, defaultOpen = true, children }: SectionGro
 
   // Check if any of the child inputs are active
   const hasActiveChild = React.Children.toArray(children).some((child) => {
-    if (React.isValidElement(child)) {
-      return (child.props as any).isActive;
+    if (React.isValidElement<{ isActive?: boolean }>(child)) {
+      return child.props.isActive;
     }
     return false;
   });
 
-  // Auto-expand the group if a section inside it becomes active (e.g. from preview click)
-  useEffect(() => {
+  // Auto-expand the group if a section inside it becomes active (e.g. from preview click).
+  // Adjust state during render rather than in an effect to avoid cascading renders.
+  const [prevHasActiveChild, setPrevHasActiveChild] = useState(hasActiveChild);
+  if (hasActiveChild !== prevHasActiveChild) {
+    setPrevHasActiveChild(hasActiveChild);
     if (hasActiveChild) {
       setIsOpen(true);
     }
-  }, [hasActiveChild]);
+  }
 
   const toggleOpen = () => {
     setIsOpen(!isOpen);

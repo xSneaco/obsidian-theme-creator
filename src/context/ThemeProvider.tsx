@@ -1,7 +1,8 @@
-import React, { createContext, useReducer, useEffect } from 'react';
+import { useReducer, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { getDefaultColors } from '../theme/defaults';
 import { isValidHex } from '../theme/color-utils';
+import { ThemeContext } from './ThemeContext';
 
 export interface ThemeState {
   themeName: string;
@@ -225,13 +226,6 @@ function getInitialState(): ThemeState {
     activeSection: null,
   };
 }
-
-export interface ThemeContextProps {
-  state: ThemeState;
-  dispatch: React.Dispatch<ThemeAction>;
-}
-
-export const ThemeContext = createContext<ThemeContextProps | undefined>(undefined);
 
 export interface ThemeProviderProps {
   children: ReactNode;

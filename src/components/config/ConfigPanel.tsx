@@ -54,7 +54,11 @@ export function ConfigPanel() {
           {/* Dropdown Selector */}
           <select
             value={selectedGroup}
-            onChange={(e) => setSelectedGroup(e.target.value as any)}
+            onChange={(e) =>
+              setSelectedGroup(
+                e.target.value as 'all' | 'backgrounds' | 'text' | 'ui-elements' | 'syntax'
+              )
+            }
             className="bg-slate-950 border border-slate-800 px-2 py-1.5 rounded-lg text-xs text-slate-300 focus:outline-none focus:border-indigo-500 cursor-pointer"
           >
             <option value="all">All Groups</option>

@@ -80,7 +80,7 @@ export function ExportModal({ isOpen, onClose }: ExportModalProps) {
   // Token-based CSS Syntax Highlighting using Regex
   const highlightedCodeHtml = useMemo(() => {
     // Escape HTML to prevent injection
-    let html = cssContent
+    const html = cssContent
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
@@ -166,7 +166,7 @@ export function ExportModal({ isOpen, onClose }: ExportModalProps) {
                     name="export-mode"
                     value={mode}
                     checked={exportMode === mode}
-                    onChange={() => setExportMode(mode as any)}
+                    onChange={() => setExportMode(mode as 'dark' | 'light' | 'both')}
                     className="accent-indigo-500 cursor-pointer"
                   />
                   <span className="text-xs font-semibold text-slate-300 capitalize">

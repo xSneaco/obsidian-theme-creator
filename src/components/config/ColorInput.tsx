@@ -22,14 +22,17 @@ export function ColorInput({
 }: ColorInputProps) {
   const [localHex, setLocalHex] = useState(currentColor);
   const [isValid, setIsValid] = useState(true);
+  const [prevColor, setPrevColor] = useState(currentColor);
   const debounceTimer = useRef<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Keep local text in sync with global color state changes (e.g. undo/redo or preset loads)
-  useEffect(() => {
+  // by adjusting state during render rather than in an effect.
+  if (currentColor !== prevColor) {
+    setPrevColor(currentColor);
     setLocalHex(currentColor);
     setIsValid(true);
-  }, [currentColor]);
+  }
 
   // Focus and select the text input when the section becomes active
   useEffect(() => {
