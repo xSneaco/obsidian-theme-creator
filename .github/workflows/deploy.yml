@@ -57,29 +57,33 @@ jobs:
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           script: |
             set -euo pipefail
-
+  
             APP_DIR="/srv/web/privat/obsidian-theme"
             REPO_URL="https://github.com/xSneaco/obsidian-theme-creator.git"
             BRANCH="master"
-
+            
             mkdir -p "$APP_DIR"
             cd "$APP_DIR"
-
-            if [ ! -d .git ]; then
-              git clone --branch "$BRANCH" "$REPO_URL" .
+            
+            if [ -d .git ]; then
+            git fetch origin "$BRANCH"
+            git checkout "$BRANCH"
+            git reset --hard "origin/$BRANCH"
+            elif [ -z "$(ls -A)" ]; then
+            git clone --branch "$BRANCH" "$REPO_URL" .
             else
-              git fetch origin "$BRANCH"
-              git checkout "$BRANCH"
-              git reset --hard "origin/$BRANCH"
+            echo "Non-empty directory without .git in $APP_DIR; cleaning and initializing repo"
+            find . -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+            git clone --branch "$BRANCH" "$REPO_URL" .
             fi
-
+            
             ls -la
             [ -f docker-compose.yml ] || { echo "Missing docker-compose.yml"; exit 1; }
             [ -f docker-compose.prod.yml ] || { echo "Missing docker-compose.prod.yml"; exit 1; }
-
+            
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u xSneaco --password-stdin
             export IMAGE_TAG=latest
-
+            
             docker compose -f docker-compose.yml -f docker-compose.prod.yml pull frontend
             docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --force-recreate frontend
             docker compose -f docker-compose.yml -f docker-compose.prod.yml ps
