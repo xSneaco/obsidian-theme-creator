@@ -58,7 +58,7 @@ jobs:
           script: |
             set -euo pipefail
 
-            APP_DIR='${{ secrets.DEPLOY_PATH }}'
+            APP_DIR=/srv/web/privat/obsidian-theme
             echo "DEPLOY_PATH=$APP_DIR"
 
             [ -n "$APP_DIR" ] || { echo "DEPLOY_PATH is empty"; exit 1; }
