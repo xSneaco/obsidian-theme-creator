@@ -1,0 +1,13 @@
+services:
+  app-dev:
+    build:
+      context: .
+      target: development
+    container_name: obsidian-theme-creator-dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
