@@ -59,19 +59,25 @@ jobs:
             set -euo pipefail
 
             APP_DIR="/srv/web/privat/obsidian-theme"
-            echo "DEPLOY_PATH=$APP_DIR"
+            REPO_URL="https://github.com/xSneaco/obsidian-theme-creator.git"
+            BRANCH="master"
 
-            [ -n "$APP_DIR" ] || { echo "DEPLOY_PATH is empty"; exit 1; }
-            [ -d "$APP_DIR" ] || { echo "DEPLOY_PATH does not exist: $APP_DIR"; exit 1; }
-
+            mkdir -p "$APP_DIR"
             cd "$APP_DIR"
-            echo "PWD=$(pwd)"
+
+            if [ ! -d .git ]; then
+              git clone --branch "$BRANCH" "$REPO_URL" .
+            else
+              git fetch origin "$BRANCH"
+              git checkout "$BRANCH"
+              git reset --hard "origin/$BRANCH"
+            fi
+
             ls -la
+            [ -f docker-compose.yml ] || { echo "Missing docker-compose.yml"; exit 1; }
+            [ -f docker-compose.prod.yml ] || { echo "Missing docker-compose.prod.yml"; exit 1; }
 
-            [ -f docker-compose.yml ] || { echo "Missing docker-compose.yml in $APP_DIR"; exit 1; }
-            [ -f docker-compose.prod.yml ] || { echo "Missing docker-compose.prod.yml in $APP_DIR"; exit 1; }
-
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u xSneaco --password-stdin
             export IMAGE_TAG=latest
 
             docker compose -f docker-compose.yml -f docker-compose.prod.yml pull frontend
